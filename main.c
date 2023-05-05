@@ -7,14 +7,25 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
-int listFiles(){
+char **create2DArray(int row, int col){
+    int i, j;
+    char** array;
+    array = (char**) malloc(sizeof(char*) * row);  
+    /* malloc columns for each row */
+    for (i = 0 ;  i < row ; i++)
+    {
+        array[i] = (char*) malloc(sizeof(char) * col); 
+    }
+    return array;
+}
+
+char **listFiles(int *countFiles){
         struct dirent *dp;
         DIR* directory = opendir(".");
         char file[200];
+        char **filenames= create2DArray(20,20);
         dp = readdir(directory);
-        int n;
         int stringLength;
-        int countFiles=0;
          while(dp!=NULL){
              if (dp->d_type == 8){
                 stringLength = strlen(dp->d_name);
@@ -22,12 +33,7 @@ int listFiles(){
                 {
                     if(dp->d_name[i]== '.'){
                         if (strcmp(&dp->d_name[i], ".usp") == 0){
-                            strcpy(file,"./");
-                            strcat(file, dp->d_name);
-                            strcat(file, "\n");
-                            n = strlen(file);
-                            write(1, file, n);
-                            countFiles++;
+                            strcpy(filenames[(*countFiles)++], dp->d_name);
                     }
                 }
                 }
@@ -36,14 +42,19 @@ int listFiles(){
             dp = readdir(directory);
          }
         closedir(directory);
-        return countFiles;
+        return filenames;
 }
 
 int main(){
-    int count;
-    count = listFiles();
-    printf("number of usp files: %d\n",count);
+    char ** array;
+    int countFiles=0;
+    array = listFiles(&countFiles);
+    for (int i=0; i<countFiles; i++){
+        printf("%s \n", array[i]);
+    }
 
+ 
+    
 
     return 0;
 }
