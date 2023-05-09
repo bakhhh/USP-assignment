@@ -51,7 +51,6 @@ int main()
     char **filename = listFiles(&countFiles);
     int pid;
     int i;
-
     int writingFilenamePipe[countFiles][2];
     int writingResultsPipe[countFiles][2];
 
@@ -68,12 +67,11 @@ int main()
         if (pid > 0)
         {
             int n = strlen(filename[i]);
-            char *result;
+            char *result=malloc(sizeof(char)*30);
             int resN;
             close(writingFilenamePipe[i][0]);
             write(writingFilenamePipe[i][1], filename[i], n);
             close(writingFilenamePipe[i][1]);
-
             close(writingResultsPipe[i][1]);
             int fd2 = open("results.txt", O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
             int size = read(writingResultsPipe[i][0], result, 30);
@@ -82,6 +80,7 @@ int main()
             write(fd2, "\n", 1);
             close(fd2);
             close(writingResultsPipe[i][0]);
+	        free(result);
             wait(NULL);
         }
         else if (pid == 0)
@@ -90,13 +89,14 @@ int main()
             close(writingFilenamePipe[i][1]);
             int size = read(writingFilenamePipe[i][0], buffer, 200);
             close(writingFilenamePipe[i][0]);
-
             int fd1 = open(buffer, O_RDONLY);
             int line = 0;
             int num1 = 0;
             int num2 = 0;
-            //char s[20];
-            // int index2=0;
+            char numm1[20];
+            char numm2[20];
+            int index2=0;
+            int index3=0;
             char buf;
             char operator;
             int result = 0;
@@ -109,6 +109,7 @@ int main()
                 if (buf == '\n')
                 {
                     line++;
+
                 }
                 if (line == 0)
                 {
@@ -117,28 +118,25 @@ int main()
                 }
                 if (line == 1)
                 {
-                    if (buf >= '0' && buf <= '9')
-                    { 
-                        num1 = num1 * 10 + (buf - '0');
-                    }
-              
+                    numm1[index2] = buf;
+                    index2++;
                 }
                 if (line == 2)
                 {
-                    {
-                        operator= buf;
-                    }
+                    operator= buf;    
                 }
                 if (line == 3)
                 {
-                    if (buf >= '0' && buf <= '9')
-                    {
-                        num2 = num2 * 10 + (buf - '0');
-                    }
+                    numm2[index3] = buf;
+                    index3++;
                 }
             }
             id[index] = '\0';
-            printf("num2 %d\n", num2);
+            numm1[index2] = '\0';
+            numm2[index3] = '\0';
+            num1 = atoi(numm1);
+            num2 = atoi(numm2);
+
 
             if (strncmp(&operator, "+", 1) == 0)
             {
