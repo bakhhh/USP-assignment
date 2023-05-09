@@ -95,6 +95,8 @@ int main()
             int line = 0;
             int num1 = 0;
             int num2 = 0;
+            //char s[20];
+            // int index2=0;
             char buf;
             char operator;
             int result = 0;
@@ -119,6 +121,7 @@ int main()
                     { 
                         num1 = num1 * 10 + (buf - '0');
                     }
+              
                 }
                 if (line == 2)
                 {
